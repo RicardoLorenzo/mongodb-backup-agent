@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	u "github.com/RicardoLorenzo/mongodb-backup-agent/storage/utils"
+	u "github.com/RicardoLorenzo/mongodb-backup-agent/utils"
 )
 
 type BtrfsUtils struct{}
@@ -19,7 +19,7 @@ func (utils *BtrfsUtils) createSnapshot(s Snapshot) (bool, error) {
 
 	success, err := commandUtils.RunCommand(c)
 	if !success {
-		return false, &volumeError{fmt.Sprint(err), err}
+		return false, &VolumeError{fmt.Sprint(err), err}
 	}
 	return true, nil
 }
@@ -33,7 +33,7 @@ func (utils *BtrfsUtils) deleteSnapshot(s Snapshot) (bool, error) {
 
 	success, err := commandUtils.RunCommand(c)
 	if !success {
-		return false, &volumeError{fmt.Sprint(err), err}
+		return false, &VolumeError{fmt.Sprint(err), err}
 	}
 	return true, nil
 }
@@ -44,7 +44,7 @@ func (utils *BtrfsUtils) listSnapshots(v Volume) ([]Snapshot, error) {
 
 	success, err := commandUtils.RunCommand(c)
 	if !success {
-		return nil, &volumeError{fmt.Sprint(err), err}
+		return nil, &VolumeError{fmt.Sprint(err), err}
 	}
 
 	output := commandUtils.CommandOutput()

@@ -5,12 +5,12 @@ import (
 	"fmt"
 )
 
-type volumeError struct {
+type VolumeError struct {
 	message string
 	err     error
 }
 
-func (e *volumeError) Error() string {
+func (e *VolumeError) Error() string {
 	return e.message
 }
 
@@ -33,7 +33,7 @@ func (volumeManager *VolumeManager) CreateSnapshot(s Snapshot) (bool, error) {
 		utils := BtrfsUtils{}
 		sucess, err := utils.createSnapshot(s)
 		if !sucess {
-			return false, &volumeError{fmt.Sprint(err), err}
+			return false, &VolumeError{fmt.Sprint(err), err}
 		}
 		return true, nil
 	}
@@ -46,11 +46,11 @@ func (volumeManager *VolumeManager) ListSnapshots(v Volume) ([]Snapshot, error) 
 		utils := BtrfsUtils{}
 		snapshots, err := utils.listSnapshots(v)
 		if snapshots == nil {
-			return nil, &volumeError{fmt.Sprint(err), err}
+			return nil, &VolumeError{fmt.Sprint(err), err}
 		}
 		// TODO
 	}
-	return nil, &volumeError{"unsupported filesystem", errors.New("unsuported filesystem")}
+	return nil, &VolumeError{"unsupported filesystem", errors.New("unsuported filesystem")}
 }
 
 func (volumeManager *VolumeManager) DeleteSnapshot(s Snapshot) (bool, error) {
@@ -59,7 +59,7 @@ func (volumeManager *VolumeManager) DeleteSnapshot(s Snapshot) (bool, error) {
 		utils := BtrfsUtils{}
 		sucess, err := utils.deleteSnapshot(s)
 		if !sucess {
-			return false, &volumeError{fmt.Sprint(err), err}
+			return false, &VolumeError{fmt.Sprint(err), err}
 		}
 		return true, nil
 	}
