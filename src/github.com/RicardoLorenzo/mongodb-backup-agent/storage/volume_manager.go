@@ -43,12 +43,12 @@ func (volumeManager *VolumeManager) CreateSnapshot(s Snapshot) (bool, error) {
 func (volumeManager *VolumeManager) ListSnapshots(v Volume) ([]Snapshot, error) {
 	switch volumeManager.FStype {
 	case "btrs":
-		utils := BtrfsUtils{}
-		snapshots, err := utils.listSnapshots(v)
-		if snapshots == nil {
+		btrfs := BtrfsUtils{}
+		snapshots, err := btrfs.listSnapshots(v)
+		if err != nil {
 			return nil, &VolumeError{fmt.Sprint(err), err}
 		}
-		// TODO
+		return snapshots, nil
 	}
 	return nil, &VolumeError{"unsupported filesystem", errors.New("unsuported filesystem")}
 }

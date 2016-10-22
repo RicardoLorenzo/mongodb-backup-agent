@@ -15,7 +15,7 @@ all: build
 build:
 	export GOPATH=/Users/ricardo.lorenzo/Development
 	export GOBIN=$(GOPATH)/bin
-	$(GO) install github.com/RicardoLorenzo/mongodb-backup-agent
+	$(GO) build github.com/RicardoLorenzo/mongodb-backup-agent
 fmt:
 	$(GO) fmt $(PKG)
 clean:

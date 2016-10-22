@@ -52,7 +52,7 @@ func (utils *BtrfsUtils) listSnapshots(v Volume) ([]Snapshot, error) {
 	for scanner.Scan() {
 		fields := strings.Fields(scanner.Text())
 
-		// snapshot name?
+		// TODO parse fields and create Snapshot object
 		fmt.Println(fields[0])
 	}
 

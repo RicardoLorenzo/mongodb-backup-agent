@@ -5,12 +5,12 @@ import (
 	"os/exec"
 )
 
-type commandError struct {
+type CommandError struct {
 	message string
 	err     error
 }
 
-func (e *commandError) Error() string {
+func (e *CommandError) Error() string {
 	return e.message
 }
 
@@ -32,7 +32,7 @@ func (utils *CommandUtils) RunCommand(c Command) (bool, error) {
 
 	path, err := exec.LookPath(c.Binary)
 	if err != nil {
-		return false, &commandError{stringUtils.StringConcat([]string{"[", c.Binary, "] command not found"}), err}
+		return false, &CommandError{stringUtils.StringConcat([]string{"[", c.Binary, "] command not found"}), err}
 	}
 
 	cmd := exec.Command(path, stringUtils.StringConcat(c.Args))
@@ -41,7 +41,7 @@ func (utils *CommandUtils) RunCommand(c Command) (bool, error) {
 	err = cmd.Start()
 	err = cmd.Wait()
 	if err != nil {
-		return false, &commandError{utils.output.String(), err}
+		return false, &CommandError{utils.output.String(), err}
 	}
 	return true, nil
 }

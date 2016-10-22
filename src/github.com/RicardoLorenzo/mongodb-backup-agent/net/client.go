@@ -18,14 +18,14 @@ func (e *NetworkError) Error() string {
 	return e.message
 }
 
-type BackupClient struct {
+type NetworkClient struct {
 	server     string
 	port       int
 	connection net.Conn
 }
 
-func NewBackupClient(server string, port int) BackupClient {
-	client := BackupClient{}
+func NewNetworkClient(server string, port int) NetworkClient {
+	client := NetworkClient{}
 	client.server = server
 	if port > 0 {
 		client.port = port
@@ -35,7 +35,7 @@ func NewBackupClient(server string, port int) BackupClient {
 	return client
 }
 
-func (client *BackupClient) Connect() error {
+func (client *NetworkClient) Connect() error {
 	stringUtils := u.StringUtils{}
 	connectionString := stringUtils.StringConcat([]string{client.server, ":", strconv.Itoa(client.port)})
 
@@ -47,13 +47,13 @@ func (client *BackupClient) Connect() error {
 	return nil
 }
 
-func (client *BackupClient) Close() {
+func (client *NetworkClient) Disconnect() {
 	if client.connection != nil {
 		client.connection.Close()
 	}
 }
 
-func (client *BackupClient) ReadLine() (string, error) {
+func (client *NetworkClient) ReadLine() (string, error) {
 	message, err := bufio.NewReader(client.connection).ReadString('\n')
 	if err != nil {
 		return "", &NetworkError{fmt.Sprint(err), err}
@@ -61,7 +61,7 @@ func (client *BackupClient) ReadLine() (string, error) {
 	return message, nil
 }
 
-func (client *BackupClient) WriteLine(line string) error {
+func (client *NetworkClient) WriteLine(line string) error {
 	stringUtils := u.StringUtils{}
 	writeLine := stringUtils.StringConcat([]string{line, "\n"})
 
