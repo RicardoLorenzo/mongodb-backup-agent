@@ -10,13 +10,14 @@ import (
 	"time"
 
 	b "github.com/RicardoLorenzo/mongodb-backup-agent/backup"
+	c "github.com/RicardoLorenzo/mongodb-backup-agent/conf"
 )
 
 func main() {
-	c := make(chan os.Signal, 2)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	channel := make(chan os.Signal, 2)
+	signal.Notify(channel, os.Interrupt, syscall.SIGTERM)
 	go func() {
-		<-c
+		<-channel
 		os.Exit(1)
 	}()
 
@@ -45,14 +46,17 @@ func main() {
 		log.Panic("backup server isn't configured")
 	}
 
-	commands := NewBackupCommands(config)
+	bcommands := b.NewBackupCommands(config)
 	bclient, err := b.NewBackupClient(backupServer, backupPort, agentId)
 	bclient.Register()
 
 	for {
-		commands := bclient.GetCommands()
-		for _, c := range commands {
-			commands.RunCommand(c)
+		commands, err := bclient.GetCommands()
+		if err != nil {
+			log.Print(err)
+		}
+		for _, command := range commands {
+			bcommands.RunCommand(command)
 		}
 		time.Sleep(1 * time.Second)
 	}
