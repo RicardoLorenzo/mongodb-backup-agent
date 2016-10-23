@@ -27,17 +27,17 @@ type VolumeManager struct {
 	FStype string
 }
 
-func (volumeManager *VolumeManager) CreateSnapshot(s Snapshot) (bool, error) {
+func (volumeManager *VolumeManager) CreateSnapshot(s Snapshot) error {
 	switch volumeManager.FStype {
 	case "btrs":
 		utils := BtrfsUtils{}
 		sucess, err := utils.createSnapshot(s)
 		if !sucess {
-			return false, &VolumeError{fmt.Sprint(err), err}
+			return &VolumeError{fmt.Sprint(err), err}
 		}
-		return true, nil
+		return nil
 	}
-	return false, nil
+	return nil
 }
 
 func (volumeManager *VolumeManager) ListSnapshots(v Volume) ([]Snapshot, error) {
@@ -53,15 +53,15 @@ func (volumeManager *VolumeManager) ListSnapshots(v Volume) ([]Snapshot, error) 
 	return nil, &VolumeError{"unsupported filesystem", errors.New("unsuported filesystem")}
 }
 
-func (volumeManager *VolumeManager) DeleteSnapshot(s Snapshot) (bool, error) {
+func (volumeManager *VolumeManager) DeleteSnapshot(s Snapshot) error {
 	switch volumeManager.FStype {
 	case "btrs":
 		utils := BtrfsUtils{}
 		sucess, err := utils.deleteSnapshot(s)
 		if !sucess {
-			return false, &VolumeError{fmt.Sprint(err), err}
+			return &VolumeError{fmt.Sprint(err), err}
 		}
-		return true, nil
+		return nil
 	}
-	return false, nil
+	return nil
 }

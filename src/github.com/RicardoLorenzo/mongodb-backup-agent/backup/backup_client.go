@@ -1,9 +1,8 @@
-package net
+package backup
 
 import (
 	"bufio"
 	"fmt"
-	"strconv"
 	"strings"
 
 	n "github.com/RicardoLorenzo/mongodb-backup-agent/net"
@@ -11,18 +10,16 @@ import (
 )
 
 type BackupError struct {
-	message string
-	err     error
+	Message string
+	Err     error
 }
 
 func (e *BackupError) Error() string {
-	return e.message
+	return e.Message
 }
 
 type BackupCommand struct {
-	Name   string
-	Path   string
-	Action int
+	Name, Path, Snapshot string
 }
 
 type BackupClient struct {
@@ -73,18 +70,15 @@ func (client *BackupClient) GetCommands() ([]BackupCommand, error) {
 	for scanner.Scan() {
 		fields := strings.Fields(scanner.Text())
 
-		var path string
-		var action int
+		var path, snapshot string
 		if len(fields) > 1 {
 			path = fields[1]
 		}
 		if len(fields) > 2 {
-			action, err = strconv.Atoi(fields[2])
-		} else {
-			action = -1
+			snapshot = fields[2]
 		}
 
-		backupCommands = append(backupCommands, BackupCommand{Name: fields[0], Path: path, Action: action})
+		backupCommands = append(backupCommands, BackupCommand{Name: fields[0], Path: path, Snapshot: snapshot})
 	}
 	return backupCommands, nil
 }

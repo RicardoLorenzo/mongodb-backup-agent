@@ -4,13 +4,22 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
+	"time"
 
 	b "github.com/RicardoLorenzo/mongodb-backup-agent/backup"
-	c "github.com/RicardoLorenzo/mongodb-backup-agent/conf"
 )
 
 func main() {
+	c := make(chan os.Signal, 2)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		os.Exit(1)
+	}()
+
 	log.SetOutput(os.Stdout)
 	config, err := c.NewConfig()
 	if err != nil {
@@ -36,16 +45,15 @@ func main() {
 		log.Panic("backup server isn't configured")
 	}
 
-	fsType := config.GetProperty("storage.type")
-	if len(fsType) == 0 {
-		fsType = "btrfs"
-	}
-
+	commands := NewBackupCommands(config)
 	bclient, err := b.NewBackupClient(backupServer, backupPort, agentId)
 	bclient.Register()
 
-	//vm := s.VolumeManager{FStype: fsType}
-	//v := s.Volume{name: "test", path: "/usr/test"}
-	//s := s.Snapshot{Name: "snap_test", Volume: s.Volume{Name: "test", Path: "/usr/test"}}
-	//vm.CreateSnapshot(s)
+	for {
+		commands := bclient.GetCommands()
+		for _, c := range commands {
+			commands.RunCommand(c)
+		}
+		time.Sleep(1 * time.Second)
+	}
 }
